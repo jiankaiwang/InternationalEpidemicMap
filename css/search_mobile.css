@@ -1,0 +1,47 @@
+@media only screen and (max-width: 600px) {
+	#search {
+		margin-top: 7%;
+	}
+	
+	/* search general */
+	.search-select {
+		font-size: 16px;
+	}
+	
+	#search-start {
+		clear: both;
+	}
+	
+	#search-source {
+		clear: both;
+		width: 100%;
+		margin: 0px;
+		padding-left: 0px;
+	}
+
+}
+
+@media only screen and (max-width: 425px) {
+	#search {
+		margin-top: 15%;
+	}
+	
+	/* search general */
+	.search-select {
+		font-size: 16px;
+	}
+
+	#search-start {
+		clear: both;
+	}
+	
+	#search-source {
+		clear: both;
+		width: 100%;
+		margin: 0px;
+		padding-left: 0px;
+	}
+}
+
+
+

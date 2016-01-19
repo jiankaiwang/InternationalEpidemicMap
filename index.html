@@ -1,0 +1,338 @@
+﻿<html>
+	<head>		
+		<meta charset="UTF-8">
+        <meta name="keywords" content="王建凱,JKW,Jian-Kai Wang, CDC, TW, international epidemic map, epidemic intelligence center, 國際間旅遊疫情建議地圖" />
+        <meta name="author" content="王建凱, JKW, Jian-Kai Wang" />
+        <meta http-equiv="Content-Language" Content="en-US,en-UK,zh-TW,zh-CN" />
+        <meta property="og:title" content="International Epidemic Map (國際旅遊疫情圖)" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="http://cdciem.azurewebsites.net" />
+        <meta property="og:email" content="jkw@cdc.gov.tw" /> 
+        <meta property="og:image" content="http://cdciem.azurewebsites.net/img/cdciem_snapshot.png" />
+        <meta property="og:site_name" content="CDCIEM" />
+        <meta property="og:description" content="疾病管制署針對目前全世界的疫情提供資訊供民眾出國了解該地傳染病疫情" />
+        <title>International Epidemic Map (國際旅遊疫情圖)</title>
+		<script src="js/jquery-1.11.1.min_ori.js" type="text/javascript"></script>
+		<script src="js/highmaps.js" type="text/javascript"></script>
+		<script src="js/data.js" type="text/javascript"></script>
+		<script src="js/world.js" type="text/javascript"></script>
+		<script src="js/jquery.easyui.min.js" type="text/javascript" ></script>
+        <script src="js/googleMapapi.js" type="text/javascript"></script>
+        <link rel="shortcut icon" href="img/cdciem.png" />
+		<link rel="stylesheet" href="css/search.css" type="text/css"/>
+		<link rel="stylesheet" href="css/search_mobile.css" type="text/css"/>
+		<link rel="stylesheet" href="css/easyui.css" type="text/css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	</head>
+	<body>
+		<ul id="search">
+			<li id="search-expand">
+				<img id="search-expand-img" src="img/expand_green.png" />
+			</li>
+			<li id="search-source" class="search-source-class">
+				<select class="search-select" id="search-select-source">
+					<!--<option value="cdctw" selected>CDC Taiwan</option>-->
+				</select>
+			</li>
+			<li id="search-source" class="search-source-class">
+				<select class="search-select" id="search-select-date" onchange="clickToShowDisList(this.options[this.selectedIndex].value,1)">
+					<!--<option value="20160108" selected>2015/12/14-2016/01/08</option>-->
+				</select>
+			</li>
+			<li id="search-source" class="search-source-class" onchange="javascript:searchStart();">
+				<select class="search-select" id="search-select-disease">
+					<!--<option value="summary" selected>Disease Summary</option>
+					<option value="dengue">Dengue Fever</option>-->
+				</select>
+			</li>
+			<!--<li id="search-start" class="search-source-class">
+				<img id="search-start-img" src="img/magnifier.png" />
+			</li>-->
+		</ul>
+		
+		<ul id="infor">
+			<li id="infor-expend">
+				<!--<img id="infor-expend-start" src="img/magnifier.png"></img>-->
+				<i class="fa fa-book fa-lg" id="infor-expend-start"></i>
+			</li>
+			<li id="infor-body">
+				<div id="inforTab" class="easyui-tabs">
+					<div title="國際間旅遊疫情建議" style="padding:10px">
+                        <ul class="infor-body-title infor-level0">無 (尚未警示)</ul>
+                        <ul class="infor-body-list">
+                            <li class="infor-body-list-meaning"></li>
+                            <li class="infor-body-list-suggestion"></li>
+                        </ul>
+                        <hr class="infor-body-list-hr" />
+						<ul class="infor-body-title infor-level1">第一級:注意(Watch)</ul>
+						<ul class="infor-body-list">
+							<li class="infor-body-list-meaning">提醒注意</li>
+							<li class="infor-body-list-suggestion">│&nbsp;提醒遵守當地的一般預防措施</li>
+						</ul>
+						<hr class="infor-body-list-hr" />
+						<ul class="infor-body-title infor-level2">第二級:警示(Alert)</ul>
+						<ul class="infor-body-list">
+							<li class="infor-body-list-meaning">加強預警</li>
+							<li class="infor-body-list-suggestion">│&nbsp;對當地採取加強防護</li>
+						</ul>
+						<hr class="infor-body-list-hr" />
+						<ul class="infor-body-title infor-level3">第三級:警告(Warning)</ul>
+						<ul class="infor-body-list">
+							<li class="infor-body-list-meaning">避免所有非必要旅遊</li>
+							<li class="infor-body-list-suggestion">│&nbsp;避免至當地所有非必要旅遊</li>
+						</ul>
+					</div>
+					<div title="您所在區域的國際疫情" style="padding:10px" id="inforTab-disease">
+						<ul class="infor-body-title" id="infor-body-title-body">目前位置</ul>
+						<!--<ul class="infor-body-list">
+							<li class="infor-body-list-item" id="infor-geo-x">X:</li>
+							<li class="infor-body-list-item-2" id="infor-geo-y">Y:</li>
+						</ul>
+						<hr class="infor-body-list-hr" />-->
+					</div>
+				</div>
+			</li>
+		</ul>
+		
+		<div id="container"></div>		
+		
+		<ul id="logo">
+			<li id="logo-image">
+				<a href="http://www.cdc.gov.tw" target=_blank>
+				<img id="logo-image-body" src="img/cdc.tw.png" />
+				</a>
+			</li>
+			<li id="logo-text">
+				<a href="http://www.cdc.gov.tw" target=_blank>
+				CDC, Taiwan
+				</a>
+			</li>
+			<li id="logo-support">
+				|&nbsp;<a href="mailto:jkw@cdc.gov.tw" title="jkw@cdc.gov.tw">
+				Contact</a>
+			</li>
+			<li id="logo-support">
+				|&nbsp;<a href="https://www.facebook.com/TWCDC" target=_blank title="CDC 1922 防疫達人!">
+				FB</a>
+			</li>
+            <li id="logo-support">
+                |&nbsp;<a href="#">Copyright © EIC</a> ( <a href="http://www.highcharts.com/">Highcharts</a> )
+            </li>
+            </ul>
+	
+		<script type="text/javascript" src="js/control.js"></script>
+		<script>	
+		/* JS v1.0.0 (2016-1-8) (c) 2016 Center for Disease Control, Taiwan */
+		
+        // get current location and find the near by country (inside getLocation())
+        var getJsonFromSummary = [];
+        getLocation();
+
+        // control the current selection
+        var currentSelection = '';
+		
+		$(function () {	
+			// v1.0.0 fetch initialization parameters (the json for keeping update)
+			// after initialization, then saving the selections from users
+			var selectionPanel = {};
+			$.getJSON("data/configJson/whm-config-setting.json", function (data) {
+				for(var index in data) {
+					for(var hashIndex in data[index]) {
+						switch(hashIndex) {
+							case "initial-disease":
+							case "initial-date":
+							case "initial-color":
+							case "initial-source":
+							case "initial-disItem":
+								selectionPanel[hashIndex] = (data[index])[hashIndex];
+								//console.log(hashIndex);
+								break;
+						}
+					}
+				}
+				
+				// v.1.0 initialization
+				currentSelection = selectionPanel["initial-source"] + "_" 
+				+ selectionPanel["initial-date"] + "_" + selectionPanel["initial-disease"];
+				
+				getJSONMap(selectionPanel["initial-disease"],
+				'data/dataJson/' + selectionPanel["initial-date"] + '/' + currentSelection + ".json",
+				selectionPanel["initial-color"]);
+				
+				// initialization
+				clickToShowDisList(selectionPanel["initial-disItem"],0);
+			});		
+			
+			// initialize control information tab
+			$('#inforTab').tabs({
+                plain: true,
+                narrow: true,
+                justified: true
+            })
+			
+			// v1.0.0 fetch selection panel	(the json for keeping update)
+			$.getJSON("data/selJson/whm-sel-item.json", function(data) {			
+				for(var index in data) {
+					// initial 
+					if(currentIndex == '') {
+						currentIndex = index;
+					} else {				
+						// start to append
+						appendItem(selectionPanel["initial-date"]);
+						
+						// set for next id
+						currentIndex = index;
+					}
+					
+					for(var hashIndex in data[index]) {
+						switch(hashIndex) {
+							case "id":
+								getCurrentId = (data[index])[hashIndex];
+								break;
+							default:
+								hash2Value[hashIndex] = (data[index])[hashIndex];
+								break;
+						}
+					}
+				}
+				
+				// finish the last selection
+				appendItem(selectionPanel["initial-date"]);
+			});		
+
+		    // not used
+		    //$("#search-start").click(function() {
+		    //});
+			
+		    // v.1.0 select source based on the user selection
+		    // default is expansion
+			$("#search-expand").click(function() {
+				ctlExpension('search-source-class',500);
+			});
+			
+			// v.1.0 expand information and initial state is closed
+			$("#infor-expend-start").click(function() {
+				ctlExpension('inforTab',500);
+			});
+			ctlExpension('inforTab',0);
+		});
+		
+		// v.1.0 main settings of the world health map
+		function getJSONMap(getDiseaseName, getURL, getColor) {	
+		    $.getJSON(getURL, function (data) {
+		        // save for further analyzing
+		        getJsonFromSummary = data;
+
+		        // start to find the near by country, but only the initialization
+		        //appendInterEpiInfo();
+
+		        // add current location
+		        /*var inListOrNot = 0;
+				for(var listIndex in data) {
+					if(data[listIndex]["code"] == cntLocation["code"]) {
+						// current location already in the list
+						data[listIndex]["description"] = "目前位置<br>" + data[listIndex]["description"];
+						inListOrNot = 1;
+					}
+				}
+				if(inListOrNot == 0) {
+					// current location is not in the list
+					data.push(cntLocation);
+				}*/
+
+				var mapData = Highcharts.geojson(Highcharts.maps['custom/world']);
+
+				// v.1.0 use this.{attr} to access each data
+				$.each(data, function () {	});
+
+				$('#container').highcharts('Map', {
+					chart : {
+						borderWidth : 0,
+						backgroundColor: "rgba(210,210,210,0)",
+						plotBorderColor: "#000000"
+					},
+
+					title: {
+						text: '<font style="font-weight: bold; font-family: Microsoft JhengHei; font-size: 20px; ">International Epidemic Map</font>'
+					},
+
+					legend: {
+						enabled: false,
+						itemStyle: {
+							fontWeight: 'bold',
+							color: 'rgba(10,10,10,0.5)',
+							textDecoration: 'none',
+							fontSize: '16px',
+							fontFamily: 'Microsoft JhengHei'
+						}
+					},
+
+					mapNavigation: {
+						enabled: true,
+						enableDoubleClickZoom: true,
+						enableMouseWheelZoom: true,
+						enableDoubleClickZoomTo: true,
+						enableTouchZoom: true,
+						buttonOptions: {
+							verticalAlign: 'bottom'
+						},
+						buttons: {
+							zoomIn: {
+								/*onclick: function() { if(checkZoomState("in")) {this.mapZoom(0.5);} }*/
+								style: {
+									cursor: 'pointer',
+									backgroundColor: 'rgba(10,10,10,1)'
+								}
+							},
+							zoomOut: {
+								/*onclick: function() { if(checkZoomState("out")) {this.mapZoom(2);} }*/
+								style: {
+									cursor: 'pointer'
+								}
+							}
+						}
+					},
+					
+					plotOptions: {
+						map: {
+							borderColor: 'rgba(10,10,10,0.5)'
+						}
+					},
+					
+					colorAxis: {
+						minColor: '#FFFFFF'
+					},
+
+					series : [{
+						name: 'Countries',
+						mapData: mapData,
+						color: '#000000',
+						enableMouseTracking: false,
+					}, {
+					    //type: 'mapbubble',
+                        type: 'map',
+						dataLabels: {
+							enabled: true,
+							format: '{point.Country}'
+						},
+						color: getColor,
+						mapData: mapData,
+						name: getDiseaseName,
+						joinBy: ['iso-a2', 'code'],
+						data: data,
+						minSize: '2%',
+						maxSize: '8%',
+						tooltip: {
+							//pointFormat: '{point.name}: {point.Country} <br> {point.description}'
+							pointFormat: '{point.Country} <br> {point.description}',
+							style: { fontSize: '40px' }
+						}
+					}]
+				});
+			});
+		}
+		</script>
+	</body>
+</html>
+
+
