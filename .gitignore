@@ -218,4 +218,8 @@ pip-log.txt
 
 # cdciem 
 *.sln
+*.dll
+*.config
 cdctw_*.json
+packages/*
+*.config

@@ -84,12 +84,8 @@
 					</div>
 					<div title="您所在區域的國際疫情" style="padding:10px" id="inforTab-disease">
 						<ul class="infor-body-title" id="infor-body-title-body">目前位置</ul>
-						<!--<ul class="infor-body-list">
-							<li class="infor-body-list-item" id="infor-geo-x">X:</li>
-							<li class="infor-body-list-item-2" id="infor-geo-y">Y:</li>
-						</ul>
-						<hr class="infor-body-list-hr" />-->
-					</div>
+                        <ul class="infor-body-list" id="infor-body-list-body"></ul><hr class="infor-body-list-hr" />
+                    </div>
 				</div>
 			</li>
 		</ul>
@@ -130,6 +126,9 @@
 
         // control the current selection
         var currentSelection = '';
+
+        // get highcharts
+        var mapChart = null;
 		
 		$(function () {	
 			// v1.0.0 fetch initialization parameters (the json for keeping update)
@@ -220,32 +219,33 @@
 		// v.1.0 main settings of the world health map
 		function getJSONMap(getDiseaseName, getURL, getColor) {	
 		    $.getJSON(getURL, function (data) {
+
 		        // save for further analyzing
 		        getJsonFromSummary = data;
 
-		        // start to find the near by country, but only the initialization
-		        //appendInterEpiInfo();
+		        var mapData = Highcharts.geojson(Highcharts.maps['custom/world']);
 
-		        // add current location
-		        /*var inListOrNot = 0;
-				for(var listIndex in data) {
-					if(data[listIndex]["code"] == cntLocation["code"]) {
-						// current location already in the list
-						data[listIndex]["description"] = "目前位置<br>" + data[listIndex]["description"];
-						inListOrNot = 1;
-					}
-				}
-				if(inListOrNot == 0) {
-					// current location is not in the list
-					data.push(cntLocation);
-				}*/
+                // 20160217 for selection usage
+		        $.each(mapData, function () {
+		            this.id = this.properties['hc-key']; // for Chart.get()
+		        });
 
-				var mapData = Highcharts.geojson(Highcharts.maps['custom/world']);
+		        // Wrap point.select to get to the total selected points
+		        Highcharts.wrap(Highcharts.Point.prototype, 'select', function (proceed) {
+		            proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+		            points = mapChart.getSelectedPoints();
+
+		            // 20160217 selection location
+		            $("#infor-body-title-body").text("目前位置 : " + points[0]["Country"]);
+		            currentCode[1] = points[0]["code"];
+		            startToFindNearInfo();
+		        });
+
 
 				// v.1.0 use this.{attr} to access each data
 				$.each(data, function () {	});
 
-				$('#container').highcharts('Map', {
+				mapChart = $('#container').highcharts('Map', {
 					chart : {
 						borderWidth : 0,
 						backgroundColor: "rgba(210,210,210,0)",
@@ -316,6 +316,7 @@
 							format: '{point.Country}'
 						},
 						color: getColor,
+						allowPointSelect: true,
 						mapData: mapData,
 						name: getDiseaseName,
 						joinBy: ['iso-a2', 'code'],
@@ -326,9 +327,20 @@
 							//pointFormat: '{point.name}: {point.Country} <br> {point.description}'
 							pointFormat: '{point.Country} <br> {point.description}',
 							style: { fontSize: '40px' }
+						},
+						cursor: 'pointer',
+						states: {
+						    select: {
+						        color: '#a4edba',
+						        borderColor: 'black',
+						        dashStyle: 'shortdot'
+						    }
 						}
 					}]
-				});
+				}).highcharts();
+
+		        // Pre-select a country
+				mapChart.get('cn').select();
 			});
 		}
 		</script>

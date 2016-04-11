@@ -207,6 +207,14 @@ function getLocation() {
     }
 }
 
+function startToFindNearInfo() {
+    // start to find near by countries
+    startToFindRegion();
+
+    // start to find the near by country, but only the initialization
+    appendInterEpiInfo();
+}
+
 function startToAddNearInfo(getOption, getCountryName) {
     switch (getOption) {
         case 0:
@@ -221,11 +229,7 @@ function startToAddNearInfo(getOption, getCountryName) {
             break;
     }
 
-    // start to find near by countries
-    startToFindRegion();
-
-    // start to find the near by country, but only the initialization
-    appendInterEpiInfo();
+    startToFindNearInfo();
 }
 
 // regular expression
@@ -264,19 +268,14 @@ function startToFindRegion() {
 // only the first time to load the near by countries
 var initialLoadOrNot = 0;
 function appendInterEpiInfo() {
-    if (initialLoadOrNot != 0) {
-        // already done
-        return;
-    }
-    initialLoadOrNot = 1;
+    $("#infor-body-list-body").empty();
     for (i = 0; i < getJsonFromSummary.length; i++) {
         if (ttlRegionList[currentCode[0]].indexOf(getJsonFromSummary[i]["code"]) > -1) {
             // start to append
-            appendStr = '<ul class="infor-body-list">';
+            var appendStr = "";
             appendStr = appendStr + '<li class="infor-body-list-item">' + getJsonFromSummary[i]["Country"] + '</li>';
             appendStr = appendStr + '<li class="infor-body-list-item-2">' + getJsonFromSummary[i]["description"] + '</li>';
-            appendStr = appendStr + '</ul><hr class="infor-body-list-hr"></hr>';
-            $("#inforTab-disease").append(appendStr);
+            $("#infor-body-list-body").append(appendStr);
         }
     }
 }
