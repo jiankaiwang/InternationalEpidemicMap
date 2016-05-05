@@ -111,16 +111,16 @@ def getColor(getDisease):
 # ----------
 # global data
 # for azure path
-azurePath = 'D:/home/site/wwwroot/'
-developPath = ''
-usedPath = developPath
+azurePath = 'D:\\home\\site\\wwwroot\\data\\'
+developPath = 'C:\\inetpub\\wwwroot\\cdciem\\data\\'
+usedPath = azurePath
 
 # save the file whose date peroid
 datePeroid = []
 
 # world health map-config-setting.json default information
 # the only one and update the content on each fetching json data
-whmConfigSettingPath = usedPath + 'configJson/whm-config-setting.json'
+whmConfigSettingPath = usedPath + 'configJson\\whm-config-setting.json'
 whmConfigSettingJson = [\
                             {\
                             "initial-disease":"summary",\
@@ -132,7 +132,7 @@ whmConfigSettingJson = [\
                         ]
                         
 # world health map-selection-item.json and default information
-whmSelItemPath = usedPath + 'selJson/whm-sel-item.json'
+whmSelItemPath = usedPath + 'selJson\\whm-sel-item.json'
 whmSelitemJson = [\
                     {\
                    	"id":"search-select-source",\
@@ -146,7 +146,7 @@ whmSelitemJson = [\
                 
 # world health map-selection.json and default information
 # update in each time
-whmSelDisPath = usedPath + 'selJson/'
+whmSelDisPath = usedPath + 'selJson\\'
 whmSelDisJson = [\
                     {\
                         "id":"search-select-disease",\
@@ -156,7 +156,7 @@ whmSelDisJson = [\
                 ]\
 
 # save all json, including summary and each disease
-jsonDataPath = usedPath + 'dataJson/'
+jsonDataPath = usedPath + 'dataJson\\'
 # save all json object
 jsonData = {}
 
@@ -185,11 +185,12 @@ def parseJson(option,getUrl):
         # method.1
         # due to Json file being downloaded as a file, must use urlretrieve() first
         # must notice the downloaded date, maybe is the previous day due to source updating time
-        downloadJsonName = usedPath + "originJson/dwn-" + currentDate + ".json"
+        downloadJsonName = usedPath + 'originJson\\dwn-' + currentDate + ".json"
         decodeJsonData = ''
-        
+                
         # if the file exist, the json file would not be downloaded
         if(not os.path.isfile(downloadJsonName)):
+            open(downloadJsonName, 'w').close()
             getJsonFromInternational = getUrl
             urllib.urlretrieve(getJsonFromInternational,downloadJsonName)
             
@@ -377,6 +378,8 @@ dataIntegrityList = [u'effective',u'expires',u'headline',\
 # disease must be only 1
 def sepHeadLine(getName):
     sepCnDis = getName.split(u'\u2500')   # '─'
+    if len(sepCnDis) < 2:
+        sepCnDis = getName.split(u'-')
     return sepCnDis[1]
     
 # make sure data is not "None" type    
@@ -663,7 +666,7 @@ for cunIndex in countryList.keys():
     
     # write out the json data for each disease
     #jsonSummaryFile = 'dataJson/' + dateFormat(1,fetchDate[1]) + '/' + 'cdctw_' + dateFormat(1,fetchDate[1]) + '_summary.json'
-    jsonSummaryFile = jsonDataPath + currentDate + '/' + 'cdctw_' + currentDate + '_summary.json'
+    jsonSummaryFile = jsonDataPath + currentDate + '\\' + 'cdctw_' + currentDate + '_summary.json'
     # write out json file
     with codecs.open(jsonSummaryFile,"w","utf-8") as fout:
         # ensure_ascii == True, then output as ascii code
