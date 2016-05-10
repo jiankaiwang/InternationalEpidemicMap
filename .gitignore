@@ -224,3 +224,6 @@ cdctw_*.json
 packages/*
 *.config
 Web.config
+data/configJson/whm-config-setting.json
+autoParseInternationalDisease.zip
+data/selJson/whm-sel-item.json
